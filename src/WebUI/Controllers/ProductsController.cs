@@ -2,20 +2,20 @@
 using sample_ca.Application.TodoItems.Commands.DeleteTodoItem;
 using sample_ca.Application.TodoItems.Commands.UpdateTodoItem;
 using sample_ca.Application.TodoItems.Commands.UpdateTodoItemDetail;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
+
 namespace sample_ca.WebUI.Controllers
 {
     [Authorize]
-    public class TodoItemsController : ApiController
+    public class ProductsController : Controller
     {
-        //recibe un comando desde el front-end 
         [HttpPost]
         public async Task<ActionResult<int>> Create(CreateTodoItemCommand command)
         {
-            //envia el comando a la aplicacion a a traves del mediator
             return await Mediator.Send(command);
         }
 

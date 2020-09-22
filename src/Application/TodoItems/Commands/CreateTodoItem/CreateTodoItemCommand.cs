@@ -1,6 +1,6 @@
 ﻿using sample_ca.Application.Common.Interfaces;
 using sample_ca.Domain.Entities;
-using MediatR;
+using MediatR;// esta libreria permite que de webui vaya a aplicacion
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,6 +22,7 @@ namespace sample_ca.Application.TodoItems.Commands.CreateTodoItem
             _context = context;
         }
 
+        //el handle implementa algo con ese comando
         public async Task<int> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
         {
             var entity = new TodoItem
@@ -34,7 +35,7 @@ namespace sample_ca.Application.TodoItems.Commands.CreateTodoItem
             _context.TodoItems.Add(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
-
+            // crear el todo y le envia el Id a la web ui (a la api)
             return entity.Id;
         }
     }
