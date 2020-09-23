@@ -25,7 +25,6 @@
     <Folder Include="Products\Commands\DeleteProduct\" />
     <Folder Include="Products\Commands\UpdateProduct\" />
     <Folder Include="Products\Queries\ExportProducts\" />
-    <Folder Include="Products\Queries\GetProducts\" />
   </ItemGroup>
 
 </Project>
