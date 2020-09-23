@@ -13,7 +13,7 @@ using sample_ca.Application.TodoLists.Commands.DeleteTodoList;
 
 namespace sample_ca.WebUI.Controllers
 {
-    public class ProductsController:ApiController
+    public class ProductsController : ApiController
     {
         [HttpGet]
         public async Task<ActionResult<ProductsVm>> Get()
@@ -22,11 +22,12 @@ namespace sample_ca.WebUI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<FileResult> Get(int id)
+        public async Task<ActionResult<ProductsVm>> Get(int id)
         {
-            var vm = await Mediator.Send(new ExportTodosQuery { ListId = id });
+            var product = await Mediator.Send(new GetProductQuery { ProductId = id });
 
-            return File(vm.Content, vm.ContentType, vm.FileName);
+
+            return product;
         }
 
         [HttpPost]

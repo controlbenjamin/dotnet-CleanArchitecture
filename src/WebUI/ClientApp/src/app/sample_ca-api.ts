@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface IProductsClient {
     get(): Observable<ProductsVm>;
     create(command: CreateTodoListCommand): Observable<number>;
-    get2(id: number): Observable<FileResponse>;
+    get2(id: number): Observable<ProductsVm>;
     update(id: number, command: UpdateTodoListCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
 }
@@ -135,7 +135,7 @@ export class ProductsClient implements IProductsClient {
         return _observableOf<number>(<any>null);
     }
 
-    get2(id: number): Observable<FileResponse> {
+    get2(id: number): Observable<ProductsVm> {
         let url_ = this.baseUrl + "/api/Products/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -146,7 +146,7 @@ export class ProductsClient implements IProductsClient {
             observe: "response",
             responseType: "blob",			
             headers: new HttpHeaders({
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             })
         };
 
@@ -157,31 +157,33 @@ export class ProductsClient implements IProductsClient {
                 try {
                     return this.processGet2(<any>response_);
                 } catch (e) {
-                    return <Observable<FileResponse>><any>_observableThrow(e);
+                    return <Observable<ProductsVm>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<FileResponse>><any>_observableThrow(response_);
+                return <Observable<ProductsVm>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGet2(response: HttpResponseBase): Observable<FileResponse> {
+    protected processGet2(response: HttpResponseBase): Observable<ProductsVm> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<FileResponse>(<any>null);
+        return _observableOf<ProductsVm>(<any>null);
     }
 
     update(id: number, command: UpdateTodoListCommand): Observable<FileResponse> {

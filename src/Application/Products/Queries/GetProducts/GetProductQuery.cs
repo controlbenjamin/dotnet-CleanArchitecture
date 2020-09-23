@@ -11,42 +11,45 @@ using System.Threading.Tasks;
 
 namespace sample_ca.Application.Products.Queries.GetProducts
 {
-    public class GetProductsQuery : IRequest<ProductsVm>
+    public class GetProductQuery : IRequest<ProductsVm>
     {
+
+        public int ProductId { get; set; }
+
     }
 
-
-    public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, ProductsVm>
+    public class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductsVm>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public GetProductsQueryHandler(IApplicationDbContext context, IMapper mapper, IConfiguration configuration)
+        public GetProductQueryHandler(IApplicationDbContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _configuration = configuration;
         }
 
-        public async Task<ProductsVm> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+        public async Task<ProductsVm> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
 
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
 
-            string sql = "SELECT * FROM Products";
 
+            var parameter = new { productId = request.ProductId };
+
+
+            string sql = "SELECT * FROM Products WHERE Id = @productId";
             var viewModel = new ProductsVm();
 
             using (var connection = new SqlConnection(connectionString))
             {
-                viewModel.Products = await connection.QueryAsync<ProductDto>(sql);
+                viewModel.Product = await connection.QueryFirstOrDefaultAsync<ProductDto>(sql, parameter);
 
             }
 
             return viewModel;
-
-
 
 
         }
