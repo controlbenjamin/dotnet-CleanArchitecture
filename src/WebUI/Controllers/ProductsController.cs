@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 using sample_ca.Application.Products.Commands.CreateProduct;
+using sample_ca.Application.Products.Commands.DeleteProduct;
 
 namespace sample_ca.WebUI.Controllers
 {
@@ -51,7 +52,7 @@ namespace sample_ca.WebUI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            await Mediator.Send(new DeleteTodoListCommand { Id = id });
+            await Mediator.Send(new DeleteProductCommand { Id = id });
 
             return NoContent();
         }
