@@ -110,7 +110,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTodoListCommand"
+                "$ref": "#/components/schemas/UpdateProductCommand"
               }
             }
           },
@@ -723,7 +723,7 @@
           }
         }
       },
-      "UpdateTodoListCommand": {
+      "UpdateProductCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -731,8 +731,17 @@
             "type": "integer",
             "format": "int32"
           },
-          "title": {
+          "description": {
             "type": "string",
+            "nullable": true
+          },
+          "stock": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         }
@@ -893,6 +902,20 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateTodoListCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
           "title": {
             "type": "string",
             "nullable": true

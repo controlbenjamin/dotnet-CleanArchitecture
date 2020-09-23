@@ -18,7 +18,7 @@ export interface IProductsClient {
     get(): Observable<ProductsVm>;
     create(command: CreateProductCommand): Observable<number>;
     get2(id: number): Observable<ProductsVm>;
-    update(id: number, command: UpdateTodoListCommand): Observable<FileResponse>;
+    update(id: number, command: UpdateProductCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
 }
 
@@ -186,7 +186,7 @@ export class ProductsClient implements IProductsClient {
         return _observableOf<ProductsVm>(<any>null);
     }
 
-    update(id: number, command: UpdateTodoListCommand): Observable<FileResponse> {
+    update(id: number, command: UpdateProductCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Products/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1276,11 +1276,13 @@ export interface ICreateProductCommand {
     lastModified?: Date | undefined;
 }
 
-export class UpdateTodoListCommand implements IUpdateTodoListCommand {
+export class UpdateProductCommand implements IUpdateProductCommand {
     id?: number;
-    title?: string | undefined;
+    description?: string | undefined;
+    stock?: number;
+    lastModified?: Date | undefined;
 
-    constructor(data?: IUpdateTodoListCommand) {
+    constructor(data?: IUpdateProductCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1292,13 +1294,15 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.title = _data["title"];
+            this.description = _data["description"];
+            this.stock = _data["stock"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): UpdateTodoListCommand {
+    static fromJS(data: any): UpdateProductCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoListCommand();
+        let result = new UpdateProductCommand();
         result.init(data);
         return result;
     }
@@ -1306,14 +1310,18 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["title"] = this.title;
+        data["description"] = this.description;
+        data["stock"] = this.stock;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
         return data; 
     }
 }
 
-export interface IUpdateTodoListCommand {
+export interface IUpdateProductCommand {
     id?: number;
-    title?: string | undefined;
+    description?: string | undefined;
+    stock?: number;
+    lastModified?: Date | undefined;
 }
 
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {
@@ -1692,6 +1700,46 @@ export class CreateTodoListCommand implements ICreateTodoListCommand {
 }
 
 export interface ICreateTodoListCommand {
+    title?: string | undefined;
+}
+
+export class UpdateTodoListCommand implements IUpdateTodoListCommand {
+    id?: number;
+    title?: string | undefined;
+
+    constructor(data?: IUpdateTodoListCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+        }
+    }
+
+    static fromJS(data: any): UpdateTodoListCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateTodoListCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        return data; 
+    }
+}
+
+export interface IUpdateTodoListCommand {
+    id?: number;
     title?: string | undefined;
 }
 

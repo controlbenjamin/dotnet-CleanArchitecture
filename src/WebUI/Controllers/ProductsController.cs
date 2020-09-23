@@ -1,16 +1,9 @@
-﻿using sample_ca.Application.TodoLists.Commands.CreateTodoList;
-using sample_ca.Application.TodoLists.Commands.DeleteTodoList;
-using sample_ca.Application.TodoLists.Commands.UpdateTodoList;
-using sample_ca.Application.TodoLists.Queries.ExportTodos;
-
-using sample_ca.Application.Products.Queries.GetProducts;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
+﻿using Microsoft.AspNetCore.Mvc;
 using sample_ca.Application.Products.Commands.CreateProduct;
 using sample_ca.Application.Products.Commands.DeleteProduct;
-
+using sample_ca.Application.Products.Commands.UpdateProduct;
+using sample_ca.Application.Products.Queries.GetProducts;
+using System.Threading.Tasks;
 namespace sample_ca.WebUI.Controllers
 {
     public class ProductsController : ApiController
@@ -37,7 +30,7 @@ namespace sample_ca.WebUI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, UpdateTodoListCommand command)
+        public async Task<ActionResult> Update(int id, UpdateProductCommand command)
         {
             if (id != command.Id)
             {
