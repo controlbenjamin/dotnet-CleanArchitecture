@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Common\Mappings\" />
-    <Folder Include="Products\Commands\CreateProduct\" />
     <Folder Include="Products\Commands\DeleteProduct\" />
     <Folder Include="Products\Commands\UpdateProduct\" />
     <Folder Include="Products\Queries\ExportProducts\" />

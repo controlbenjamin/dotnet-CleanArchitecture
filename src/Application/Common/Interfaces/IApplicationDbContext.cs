@@ -11,6 +11,8 @@ namespace sample_ca.Application.Common.Interfaces
 
         DbSet<TodoItem> TodoItems { get; set; }
 
+        DbSet<Product> Products { get; set; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

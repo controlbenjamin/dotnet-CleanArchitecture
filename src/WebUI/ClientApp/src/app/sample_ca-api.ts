@@ -16,7 +16,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IProductsClient {
     get(): Observable<ProductsVm>;
-    create(command: CreateTodoListCommand): Observable<number>;
+    create(command: CreateProductCommand): Observable<number>;
     get2(id: number): Observable<ProductsVm>;
     update(id: number, command: UpdateTodoListCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
@@ -83,7 +83,7 @@ export class ProductsClient implements IProductsClient {
         return _observableOf<ProductsVm>(<any>null);
     }
 
-    create(command: CreateTodoListCommand): Observable<number> {
+    create(command: CreateProductCommand): Observable<number> {
         let url_ = this.baseUrl + "/api/Products";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1228,10 +1228,13 @@ export interface IProductDto {
     lastModified?: Date | undefined;
 }
 
-export class CreateTodoListCommand implements ICreateTodoListCommand {
-    title?: string | undefined;
+export class CreateProductCommand implements ICreateProductCommand {
+    id?: number;
+    description?: string | undefined;
+    stock?: number;
+    lastModified?: Date | undefined;
 
-    constructor(data?: ICreateTodoListCommand) {
+    constructor(data?: ICreateProductCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1242,26 +1245,35 @@ export class CreateTodoListCommand implements ICreateTodoListCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.title = _data["title"];
+            this.id = _data["id"];
+            this.description = _data["description"];
+            this.stock = _data["stock"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): CreateTodoListCommand {
+    static fromJS(data: any): CreateProductCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateTodoListCommand();
+        let result = new CreateProductCommand();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
+        data["id"] = this.id;
+        data["description"] = this.description;
+        data["stock"] = this.stock;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
         return data; 
     }
 }
 
-export interface ICreateTodoListCommand {
-    title?: string | undefined;
+export interface ICreateProductCommand {
+    id?: number;
+    description?: string | undefined;
+    stock?: number;
+    lastModified?: Date | undefined;
 }
 
 export class UpdateTodoListCommand implements IUpdateTodoListCommand {
@@ -1645,6 +1657,42 @@ export interface ITodoItemDto {
     done?: boolean;
     priority?: number;
     note?: string | undefined;
+}
+
+export class CreateTodoListCommand implements ICreateTodoListCommand {
+    title?: string | undefined;
+
+    constructor(data?: ICreateTodoListCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+        }
+    }
+
+    static fromJS(data: any): CreateTodoListCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateTodoListCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        return data; 
+    }
+}
+
+export interface ICreateTodoListCommand {
+    title?: string | undefined;
 }
 
 export class WeatherForecast implements IWeatherForecast {

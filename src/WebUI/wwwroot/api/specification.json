@@ -35,7 +35,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTodoListCommand"
+                "$ref": "#/components/schemas/CreateProductCommand"
               }
             }
           },
@@ -700,12 +700,25 @@
           }
         }
       },
-      "CreateTodoListCommand": {
+      "CreateProductCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "title": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
             "type": "string",
+            "nullable": true
+          },
+          "stock": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         }
@@ -871,6 +884,16 @@
             "format": "int32"
           },
           "note": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateTodoListCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
             "type": "string",
             "nullable": true
           }

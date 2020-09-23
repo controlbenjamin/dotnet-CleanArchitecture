@@ -1,15 +1,14 @@
-﻿//using sample_ca.Application.TodoLists.Commands.CreateTodoList;
-//using sample_ca.Application.TodoLists.Commands.DeleteTodoList;
-//using sample_ca.Application.TodoLists.Commands.UpdateTodoList;
-//using sample_ca.Application.TodoLists.Queries.ExportTodos;
+﻿using sample_ca.Application.TodoLists.Commands.CreateTodoList;
+using sample_ca.Application.TodoLists.Commands.DeleteTodoList;
+using sample_ca.Application.TodoLists.Commands.UpdateTodoList;
+using sample_ca.Application.TodoLists.Queries.ExportTodos;
+
 using sample_ca.Application.Products.Queries.GetProducts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using sample_ca.Application.TodoLists.Queries.ExportTodos;
-using sample_ca.Application.TodoLists.Commands.CreateTodoList;
-using sample_ca.Application.TodoLists.Commands.UpdateTodoList;
-using sample_ca.Application.TodoLists.Commands.DeleteTodoList;
+
+using sample_ca.Application.Products.Commands.CreateProduct;
 
 namespace sample_ca.WebUI.Controllers
 {
@@ -31,7 +30,7 @@ namespace sample_ca.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> Create(CreateTodoListCommand command)
+        public async Task<ActionResult<int>> Create(CreateProductCommand command)
         {
             return await Mediator.Send(command);
         }
