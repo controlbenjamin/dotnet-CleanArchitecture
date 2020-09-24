@@ -14,6 +14,142 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
+export interface ICountriesClient {
+    get(): Observable<Countries[]>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class CountriesClient implements ICountriesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    get(): Observable<Countries[]> {
+        let url_ = this.baseUrl + "/api/Countries";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<Countries[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Countries[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<Countries[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Countries.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Countries[]>(<any>null);
+    }
+}
+
+export interface ICovid19Client {
+    get(): Observable<Covid19Summary>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class Covid19Client implements ICovid19Client {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    get(): Observable<Covid19Summary> {
+        let url_ = this.baseUrl + "/api/Covid19";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<Covid19Summary>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Covid19Summary>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<Covid19Summary> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Covid19Summary.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Covid19Summary>(<any>null);
+    }
+}
+
 export interface IProductsClient {
     get(): Observable<ProductsVm>;
     create(command: CreateProductCommand): Observable<number>;
@@ -1130,6 +1266,234 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         }
         return _observableOf<WeatherForecast[]>(<any>null);
     }
+}
+
+export class Countries implements ICountries {
+    country?: string | undefined;
+    slug?: string | undefined;
+    isO2?: string | undefined;
+
+    constructor(data?: ICountries) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.country = _data["country"];
+            this.slug = _data["slug"];
+            this.isO2 = _data["isO2"];
+        }
+    }
+
+    static fromJS(data: any): Countries {
+        data = typeof data === 'object' ? data : {};
+        let result = new Countries();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["country"] = this.country;
+        data["slug"] = this.slug;
+        data["isO2"] = this.isO2;
+        return data; 
+    }
+}
+
+export interface ICountries {
+    country?: string | undefined;
+    slug?: string | undefined;
+    isO2?: string | undefined;
+}
+
+export class Covid19Summary implements ICovid19Summary {
+    message?: string | undefined;
+    global?: Global | undefined;
+    countries?: Countries2[] | undefined;
+    date?: Date;
+
+    constructor(data?: ICovid19Summary) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.message = _data["message"];
+            this.global = _data["global"] ? Global.fromJS(_data["global"]) : <any>undefined;
+            if (Array.isArray(_data["countries"])) {
+                this.countries = [] as any;
+                for (let item of _data["countries"])
+                    this.countries!.push(Countries2.fromJS(item));
+            }
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): Covid19Summary {
+        data = typeof data === 'object' ? data : {};
+        let result = new Covid19Summary();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["message"] = this.message;
+        data["global"] = this.global ? this.global.toJSON() : <any>undefined;
+        if (Array.isArray(this.countries)) {
+            data["countries"] = [];
+            for (let item of this.countries)
+                data["countries"].push(item.toJSON());
+        }
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ICovid19Summary {
+    message?: string | undefined;
+    global?: Global | undefined;
+    countries?: Countries2[] | undefined;
+    date?: Date;
+}
+
+export class Global implements IGlobal {
+    newConfirmed?: number;
+    totalConfirmed?: number;
+    newDeaths?: number;
+    totalDeaths?: number;
+    newRecovered?: number;
+    totalRecovered?: number;
+
+    constructor(data?: IGlobal) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.newConfirmed = _data["newConfirmed"];
+            this.totalConfirmed = _data["totalConfirmed"];
+            this.newDeaths = _data["newDeaths"];
+            this.totalDeaths = _data["totalDeaths"];
+            this.newRecovered = _data["newRecovered"];
+            this.totalRecovered = _data["totalRecovered"];
+        }
+    }
+
+    static fromJS(data: any): Global {
+        data = typeof data === 'object' ? data : {};
+        let result = new Global();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["newConfirmed"] = this.newConfirmed;
+        data["totalConfirmed"] = this.totalConfirmed;
+        data["newDeaths"] = this.newDeaths;
+        data["totalDeaths"] = this.totalDeaths;
+        data["newRecovered"] = this.newRecovered;
+        data["totalRecovered"] = this.totalRecovered;
+        return data; 
+    }
+}
+
+export interface IGlobal {
+    newConfirmed?: number;
+    totalConfirmed?: number;
+    newDeaths?: number;
+    totalDeaths?: number;
+    newRecovered?: number;
+    totalRecovered?: number;
+}
+
+export class Countries2 implements ICountries2 {
+    country?: string | undefined;
+    countryCode?: string | undefined;
+    slug?: string | undefined;
+    newConfirmed?: number;
+    totalConfirmed?: number;
+    newDeaths?: number;
+    totalDeaths?: number;
+    newRecovered?: number;
+    totalRecovered?: number;
+    date?: Date;
+
+    constructor(data?: ICountries2) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.country = _data["country"];
+            this.countryCode = _data["countryCode"];
+            this.slug = _data["slug"];
+            this.newConfirmed = _data["newConfirmed"];
+            this.totalConfirmed = _data["totalConfirmed"];
+            this.newDeaths = _data["newDeaths"];
+            this.totalDeaths = _data["totalDeaths"];
+            this.newRecovered = _data["newRecovered"];
+            this.totalRecovered = _data["totalRecovered"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): Countries2 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Countries2();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["country"] = this.country;
+        data["countryCode"] = this.countryCode;
+        data["slug"] = this.slug;
+        data["newConfirmed"] = this.newConfirmed;
+        data["totalConfirmed"] = this.totalConfirmed;
+        data["newDeaths"] = this.newDeaths;
+        data["totalDeaths"] = this.totalDeaths;
+        data["newRecovered"] = this.newRecovered;
+        data["totalRecovered"] = this.totalRecovered;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ICountries2 {
+    country?: string | undefined;
+    countryCode?: string | undefined;
+    slug?: string | undefined;
+    newConfirmed?: number;
+    totalConfirmed?: number;
+    newDeaths?: number;
+    totalDeaths?: number;
+    newRecovered?: number;
+    totalRecovered?: number;
+    date?: Date;
 }
 
 export class ProductsVm implements IProductsVm {

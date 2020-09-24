@@ -6,6 +6,49 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Countries": {
+      "get": {
+        "tags": [
+          "Countries"
+        ],
+        "operationId": "Countries_Get",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Countries"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Covid19": {
+      "get": {
+        "tags": [
+          "Covid19"
+        ],
+        "operationId": "Covid19_Get",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Covid19Summary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Products": {
       "get": {
         "tags": [
@@ -656,6 +699,129 @@
   },
   "components": {
     "schemas": {
+      "Countries": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "isO2": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Covid19Summary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "global": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Global"
+              }
+            ]
+          },
+          "countries": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Countries2"
+            }
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Global": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "newConfirmed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalConfirmed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newDeaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalDeaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newRecovered": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalRecovered": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Countries2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "newConfirmed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalConfirmed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newDeaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalDeaths": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newRecovered": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalRecovered": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "ProductsVm": {
         "type": "object",
         "additionalProperties": false,
