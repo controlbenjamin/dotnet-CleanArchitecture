@@ -26,6 +26,7 @@ namespace sample_ca.Application.Countries.Queries.GetCountries
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     countriesList = JsonConvert.DeserializeObject<List<Countries>>(apiResponse);
 
+                  
                 }
             }
             return countriesList;

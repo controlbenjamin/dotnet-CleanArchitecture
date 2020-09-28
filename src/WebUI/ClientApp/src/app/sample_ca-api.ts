@@ -1271,7 +1271,6 @@ export class WeatherForecastClient implements IWeatherForecastClient {
 export class Countries implements ICountries {
     country?: string | undefined;
     slug?: string | undefined;
-    isO2?: string | undefined;
 
     constructor(data?: ICountries) {
         if (data) {
@@ -1286,7 +1285,6 @@ export class Countries implements ICountries {
         if (_data) {
             this.country = _data["country"];
             this.slug = _data["slug"];
-            this.isO2 = _data["isO2"];
         }
     }
 
@@ -1301,7 +1299,6 @@ export class Countries implements ICountries {
         data = typeof data === 'object' ? data : {};
         data["country"] = this.country;
         data["slug"] = this.slug;
-        data["isO2"] = this.isO2;
         return data; 
     }
 }
@@ -1309,7 +1306,6 @@ export class Countries implements ICountries {
 export interface ICountries {
     country?: string | undefined;
     slug?: string | undefined;
-    isO2?: string | undefined;
 }
 
 export class Covid19Summary implements ICovid19Summary {

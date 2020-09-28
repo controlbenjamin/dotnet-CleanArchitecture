@@ -10,7 +10,7 @@ namespace sample_ca.Application.Countries.Queries.GetCountries
 
         public string Slug { get; set; }
 
-        public string ISO2 { get; set; }
+        // public string ISO2 { get; set; }
 
     }
 }
